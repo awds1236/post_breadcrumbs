@@ -1,7 +1,6 @@
 <h1>Post List</h1>
 {% for post in posts %}
-<h2><a href="{% url 'post_detail' post.id %}">{{ post.title }}</a></h2>
-
+<h2><a href="{% url 'post_detail' post.0 %}">{{ post.1 }}</a></h2>
 {% endfor %}
 
 <a href="{% url 'create_post' %}">Create Page</a>

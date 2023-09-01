@@ -1,22 +1,22 @@
 <h1>Post Detail</h1>
 {% for crumb in breadcrumbs %}
-    <a href="{% url 'post_detail' crumb.id %}">{{ crumb.title }}</a>
+    <a href="{% url 'post_detail' crumb.0 %}">{{ crumb.1 }}</a>
     {% if not forloop.last %} / {% endif %}
 {% endfor %}
 
-<h2>{{ page.title }}</h2>
-<p>{{ page.content }}</p>
+<h2>{{ page.1 }}</h2>
+<p>{{ page.2 }}</p>
 
 <h3>Sub Pages</h3>
 <ul>
     {% for sub_page in sub_pages %}
-    <li><a href="{% url 'post_detail' post_id=sub_page.id %}">{{ sub_page.title }}</a></li>
+    <li><a href="{% url 'post_detail' post_id=sub_page.0 %}">{{ sub_page.1 }}</a></li>
     {% empty %}
     <li>No sub pages available.</li>
     {% endfor %}
 </ul>
 
-<a href="{% url 'create_sub_post' page.id %}">Create Sub Page</a>
+<a href="{% url 'create_sub_post' page.0 %}">Create Sub Page</a>
 <br>
 <br>
 <a href="{% url 'post_list' %}">Page List</a>
