@@ -76,3 +76,54 @@ def create_sub_post(request, post_id):
         parent_post = cursor.fetchone()
 
     return render(request, 'create_sub_post.html', {'form': form, 'page': parent_post})
+
+# views.py
+
+from django.shortcuts import get_object_or_404
+from rest_framework import generics
+from rest_framework.response import Response
+from .models import Page
+from .serializers import PageSerializer
+from rest_framework import status
+
+
+# 게시물 목록 조회 및 생성
+class PageListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Page.objects.filter(parent_page_id__isnull=True)
+    serializer_class = PageSerializer
+
+# 게시물 상세 조회 및 서브 페이지 생성
+class PageDetailAPIView(generics.RetrieveAPIView):
+    queryset = Page.objects.all()
+    serializer_class = PageSerializer
+
+    def get(self, request, *args, **kwargs):
+        page = self.get_object()
+        serializer = self.get_serializer(page)
+        breadcrumbs = get_breadcrumbs(kwargs['pk'])
+        sub_pages = Page.objects.filter(parent_page_id=kwargs['pk'])
+        sub_serializer = self.get_serializer(sub_pages, many=True)
+        return Response({
+            'page': serializer.data,
+            'breadcrumbs': breadcrumbs,
+            'sub_pages': sub_serializer.data
+        })
+
+class SubPageCreateAPIView(generics.CreateAPIView):
+    queryset = Page.objects.all()
+    serializer_class = PageSerializer
+
+    def create(self, request, *args, **kwargs):
+        parent_page_id = self.kwargs.get('parent_page_id')
+        parent_page = get_object_or_404(Page, id=parent_page_id)
+
+        # parent_page_id를 추가하여 페이지 데이터를 완성
+        page_data = request.data
+        page_data['parent_page_id'] = parent_page_id
+
+        serializer = self.get_serializer(data=page_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
