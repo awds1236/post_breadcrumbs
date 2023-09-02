@@ -12,7 +12,7 @@ def post_list(request):
     return render(request, 'post_list.html', {'posts': posts})
 
 
-# 브로드 크럼스
+# 부모 id를 가져와 브로드크럼즈 생성
 def get_breadcrumbs(post_id):
     crumbs = []
     with connection.cursor() as cursor:
