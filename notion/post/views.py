@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Page
 from django.db import connection
 from .forms import PostForm
+from rest_framework import generics, status
+from rest_framework.response import Response
+from .serializers import PageSerializer
+
 
 # 게시물 목록 조회
 def post_list(request):
@@ -77,16 +81,8 @@ def create_sub_post(request, post_id):
 
     return render(request, 'create_sub_post.html', {'form': form, 'page': parent_post})
 
-# views.py
 
-from django.shortcuts import get_object_or_404
-from rest_framework import generics
-from rest_framework.response import Response
-from .models import Page
-from .serializers import PageSerializer
-from rest_framework import status
-
-
+# DRF views
 # 게시물 목록 조회 및 생성
 class PageListCreateAPIView(generics.ListCreateAPIView):
     queryset = Page.objects.filter(parent_page_id__isnull=True)
